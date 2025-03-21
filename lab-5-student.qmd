@@ -120,15 +120,23 @@ instructor_demo <- teacher_evals_clean |>
 
 instructor_demo
 ```
-
+DO SENTENCES
 **9. Each course seems to have used a different subset of the nine evaluation questions. How many teacher-course combinations asked all nine questions?**
 
 ```{r}
 #| label: teacher-course-asked-every-question
-# code chunk for Q8
+teacher_course_questions <- teacher_evals_clean |>
+  group_by(teacher_id, course_id) |>
+  summarize(
+    questions_asked = n_distinct(question_no),
+    .groups = "drop"  
+  ) |>
+  filter(questions_asked == 9) 
 
+teacher_course_questions|>
+  count()
 ```
-
+49 teacher-course combinations asked all nine questions.
 ## Rate my Professor
 
 **10. Which instructors had the highest and lowest average rating for Question 1 (I learnt a lot during the course.) across all their courses?**
