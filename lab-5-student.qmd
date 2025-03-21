@@ -39,7 +39,7 @@ library(tidyverse)
 ```{r}
 #| label: load-data
 # code chunk for importing the data
-eval<-read_csv("teacher_evals.csv")
+eval<-read_csv("data/teacher_evals.csv")
 ```
 
 ### Data Inspection + Summary
@@ -58,6 +58,7 @@ summary(eval)
 ```{r}
 #| label: row-identification
 # you may want to use code to answer this question
+summary(eval)
 ```
 Each row is a class
 **5. Use _one_ `dplyr` pipeline to clean the data by:**
@@ -72,7 +73,20 @@ Each row is a class
 ```{r}
 #| label: data-cleaning
 # code chunk for Q4
+teacher_evals_clean <- teacher_evals |>
+  rename(sex = gender) |>
+  filter(no_participants >= 10) |>
+  mutate(
+    teacher_id = as.character(teacher_id),  
+    course_id = as.character(course_id),
+    across(c(question_no, no_participants), as.integer),
+    across(c(resp_share, SET_score_avg, percent_failed_cur), as.numeric),
+    across(c(academic_degree, seniority, sex), as.factor)
+  ) |>
+  select(course_id, teacher_id, question_no, no_participants, resp_share, 
+         SET_score_avg, percent_failed_cur, academic_degree, seniority, sex)
 
+write.csv(teacher_evals_clean, "clean/teacher_evals_clean.csv")
 ```
 
 **6. How many unique instructors and unique courses are present in the cleaned dataset?**
@@ -80,9 +94,13 @@ Each row is a class
 ```{r}
 #| label: unique-courses
 # code chunk for Q5
-
+teacher_evals_clean |>
+  summarize(
+    unique_instructors = n_distinct(teacher_id),
+    unique_courses = n_distinct(course_id))
+  
 ```
-
+There are 297 unique intructors and 939 unique courses. 
 **7. One teacher-course combination has some missing values, coded as `NA`. Which instructor has these missing values? Which course? What variable are the missing values in?**
 
 ```{r}
@@ -96,7 +114,11 @@ Each row is a class
 ```{r}
 #| label: exploring-demographics-of-instructors
 # code chunk for Q7
+instructor_demo <- teacher_evals_clean |>
+  distinct(teacher_id, .keep_all = TRUE) |>
+  count(academic_degree, seniority, sex)
 
+instructor_demo
 ```
 
 **9. Each course seems to have used a different subset of the nine evaluation questions. How many teacher-course combinations asked all nine questions?**
