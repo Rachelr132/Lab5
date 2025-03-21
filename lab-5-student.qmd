@@ -49,6 +49,7 @@ eval<-read_csv("teacher_evals.csv")
 ```{r}
 #| label: explore-data
 # you may want to use code to answer this question
+summary(eval)
 
 ```
 
@@ -57,9 +58,8 @@ eval<-read_csv("teacher_evals.csv")
 ```{r}
 #| label: row-identification
 # you may want to use code to answer this question
-
 ```
-
+Each row is a class
 **5. Use _one_ `dplyr` pipeline to clean the data by:**
 
 - **renaming the `gender` variable `sex`**
